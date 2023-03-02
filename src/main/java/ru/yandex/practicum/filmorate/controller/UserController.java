@@ -73,7 +73,7 @@ public class UserController {
         }
         if (!users.contains(user)) {
             log.error("Такого пользователя не существует");
-            throw new ValidationException("Нечего обновлять");
+            throw new InvalidUpdateException("Нечего обновлять");
         }
         users.set(users.indexOf(user),user);
         log.info("Информация о пользователе обновлена");

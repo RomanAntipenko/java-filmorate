@@ -172,7 +172,7 @@ class FilmorateApplicationTests {
 		mockMvc.perform(put("/users")
 						.contentType("application/json")
 						.content(objectMapper.writeValueAsString(user2)))
-				.andExpect(status().isBadRequest())
+				.andExpect(status().is5xxServerError())
 				.andExpect(result -> result.getResponse().getErrorMessage());
 	}
 
@@ -326,7 +326,7 @@ class FilmorateApplicationTests {
 		mockMvc.perform(put("/films")
 						.contentType("application/json")
 						.content(objectMapper.writeValueAsString(film2)))
-				.andExpect(status().isBadRequest())
+				.andExpect(status().is5xxServerError())
 				.andExpect(result -> result.getResponse().getErrorMessage());
 	}
 

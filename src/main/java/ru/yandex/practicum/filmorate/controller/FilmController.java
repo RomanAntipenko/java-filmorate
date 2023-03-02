@@ -72,7 +72,7 @@ public class FilmController {
         }
         if (!films.contains(film)) {
             log.error("Такого фильма нет");
-            throw new ValidationException("Нечего обновлять");
+            throw new InvalidUpdateException("Нечего обновлять");
         }
         films.set(films.indexOf(film), film);
         log.info("Информация о фильме обновлена");

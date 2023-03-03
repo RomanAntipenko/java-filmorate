@@ -4,9 +4,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,55 +30,40 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody @NonNull User user) {
-        if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            log.error("Email пользователя не может быть пустым");
-            throw new ValidationException("Передан некорректный Email");
+    public User create(@RequestBody @Valid User user) {
+        if (isValidUser(user)) {
+            int id = ++idGenerator;
+            user.setId(id);
+            users.add(user);
+            log.info("Новый пользователь был добавлен");
+            return user;
         }
-        if (user.getLogin().contains(" ") || user.getLogin() == null) {
-            log.error("Логин пользователя не может быть пустым или содержать пробелы");
-            throw new ValidationException("Передан некорректный Логин");
-        }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Дата рождения не может быть позже чем сейчас");
-            throw new ValidationException("Некорректная дата");
-        }
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-            log.info("Передано пустое имя, вместо имени будет использоваться логин");
-        }
-        int id = ++idGenerator;
-        user.setId(id);
-        users.add(user);
-        log.info("Новый пользователь был добавлен");
-        return user;
+        return null;
     }
 
     @PutMapping
-    public User update(@RequestBody @NonNull User user) {
-        //
-        if (user.getEmail() == null || !user.getEmail().contains("@")) {
-            log.error("Email пользователя не может быть пустым");
-            throw new ValidationException("Передан некорректный Email");
+    public User update(@RequestBody @Valid User user) {
+        if (isValidUser(user)) {
+            if (!users.contains(user)) {
+                log.warn("Такого пользователя не существует");
+                throw new InvalidUpdateException("Нечего обновлять");
+            }
+            users.set(users.indexOf(user), user);
+            log.info("Информация о пользователе обновлена");
+            return user;
         }
-        if (user.getLogin().contains(" ") || user.getLogin() == null) {
-            log.error("Логин пользователя не может быть пустым или содержать пробелы");
+        return null;
+    }
+
+    public boolean isValidUser(User user) {
+        if (StringUtils.containsWhitespace(user.getLogin())) {
+            log.warn("Логин пользователя не может быть пустым или содержать пробелы");
             throw new ValidationException("Передан некорректный Логин");
         }
-        if (user.getBirthday().isAfter(LocalDate.now())) {
-            log.error("Дата рождения не может быть позже чем сейчас");
-            throw new ValidationException("Некорректная дата");
-        }
-        if (user.getName() == null) {
+        if (!StringUtils.hasLength(user.getName())) {
             user.setName(user.getLogin());
             log.info("Передано пустое имя, вместо имени будет использоваться логин");
         }
-        if (!users.contains(user)) {
-            log.error("Такого пользователя не существует");
-            throw new InvalidUpdateException("Нечего обновлять");
-        }
-        users.set(users.indexOf(user),user);
-        log.info("Информация о пользователе обновлена");
-        return user;
+        return true;
     }
 }

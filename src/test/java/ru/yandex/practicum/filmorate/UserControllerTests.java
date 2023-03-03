@@ -21,12 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest()
 @AutoConfigureMockMvc
-class FilmorateApplicationTests {
+class UserControllerTests {
 
 	@Autowired
 	private UserController userController;
-	@Autowired
-	FilmController filmController;
 	@Autowired
 	private MockMvc mockMvc;
 	@Autowired
@@ -36,12 +34,6 @@ class FilmorateApplicationTests {
 	void clearUsers() {
 		userController.getUsers().clear();
 		userController.setIdGenerator(0);
-	}
-
-	@AfterEach
-	void clearFilms() {
-		filmController.getFilms().clear();
-		filmController.setIdGenerator(0);
 	}
 
 	@SneakyThrows
@@ -80,7 +72,7 @@ class FilmorateApplicationTests {
 	void userCreateFailEmailTest() {
 		User user = User.builder()
 				.name("Name")
-				.email("Namemail.ru")
+				.email("Name@.ru")
 				.login("NickNameNick")
 				.birthday(LocalDate.of(1994,10,7))
 				.build();
@@ -192,159 +184,5 @@ class FilmorateApplicationTests {
 				.andExpect(status().is(200))
 				.andExpect(content().json(objectMapper.writeValueAsString(Arrays
 						.asList(userController.getUsers().get(0)))));
-	}
-
-	@SneakyThrows
-	@Test
-	void filmWithGoodBehaviorTest() {
-		Film film = Film.builder()
-				.name("Film")
-				.description("New Film")
-				.releaseDate(LocalDate.of(2021,12,15))
-				.duration(200)
-				.build();
-		mockMvc.perform(post("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film)))
-				.andExpect(status().is(200));
-	}
-
-	@SneakyThrows
-	@Test
-	void filmCreateFailNameTest() {
-		Film film = Film.builder()
-				.name("")
-				.description("FilmDescription")
-				.duration(150)
-				.releaseDate(LocalDate.of(1994,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film)))
-				.andExpect(status().isBadRequest())
-				.andExpect(result -> result.getResponse().getErrorMessage());
-	}
-
-	@SneakyThrows
-	@Test
-	void filmCreateFailDescriptionTest() {
-		Film film = Film.builder()
-				.name("Name")
-				.description("FilmDescriptionFilmDescriptionFilmDescriptionFilmDescriptionFilmDescription" +
-						"FilmDescriptionFilmDescriptionFilmDescriptionFilmDescriptionFilmDescription" +
-						"FilmDescriptionFilmDescriptionFilmDescriptionFilmDescriptionFilmDescription" +
-						"FilmDescriptionFilmDescriptionFilmDescriptionFilmDescriptionFilmDescription")
-				.duration(150)
-				.releaseDate(LocalDate.of(1994,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film)))
-				.andExpect(status().isBadRequest())
-				.andExpect(result -> result.getResponse().getErrorMessage());
-	}
-
-	@SneakyThrows
-	@Test
-	void filmCreateFailRealiseDateTest() {
-		Film film = Film.builder()
-				.name("Name")
-				.description("FilmDescription")
-				.duration(150)
-				.releaseDate(LocalDate.of(1850,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film)))
-				.andExpect(status().isBadRequest())
-				.andExpect(result -> result.getResponse().getErrorMessage());
-	}
-
-	@SneakyThrows
-	@Test
-	void filmCreateFailDurationTest() {
-		Film film = Film.builder()
-				.name("Name")
-				.description("FilmDescription")
-				.duration(-1)
-				.releaseDate(LocalDate.of(1950,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film)))
-				.andExpect(status().isBadRequest())
-				.andExpect(result -> result.getResponse().getErrorMessage());
-	}
-
-	@SneakyThrows
-	@Test
-	void filmUpdateGoodBehaviorTest() {
-		Film film1 = Film.builder()
-				.name("Name")
-				.description("FilmDescription")
-				.duration(150)
-				.releaseDate(LocalDate.of(1950,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(film1)));
-		int id = filmController.getFilms().get(0).getId();
-		Film film2 = Film.builder()
-				.id(id)
-				.name("Name")
-				.description("FilmDescription")
-				.duration(140)
-				.releaseDate(LocalDate.of(1950,10,7))
-				.build();
-		mockMvc.perform(put("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film2)))
-				.andExpect(status().is(200))
-				.andExpect(jsonPath("$.duration").value(140))
-				.andExpect(jsonPath("$.id").value(1));
-	}
-
-	@SneakyThrows
-	@Test
-	void filmUpdateBadBehaviorTest() {
-		Film film1 = Film.builder()
-				.name("Name")
-				.description("FilmDescription")
-				.duration(150)
-				.releaseDate(LocalDate.of(1950,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(film1)));
-		Film film2 = Film.builder()
-				.id(999)
-				.name("Name")
-				.description("FilmDescription")
-				.duration(140)
-				.releaseDate(LocalDate.of(1950,10,7))
-				.build();
-		mockMvc.perform(put("/films")
-						.contentType("application/json")
-						.content(objectMapper.writeValueAsString(film2)))
-				.andExpect(status().is5xxServerError())
-				.andExpect(result -> result.getResponse().getErrorMessage());
-	}
-
-	@SneakyThrows
-	@Test
-	void filmGetAllTest() {
-		Film film = Film.builder()
-				.name("Name")
-				.description("FilmDescription")
-				.duration(150)
-				.releaseDate(LocalDate.of(1950,10,7))
-				.build();
-		mockMvc.perform(post("/films")
-				.contentType("application/json")
-				.content(objectMapper.writeValueAsString(film)));
-		mockMvc.perform(get("/films"))
-				.andExpect(status().is(200))
-				.andExpect(content().json(objectMapper.writeValueAsString(Arrays
-						.asList(filmController.getFilms().get(0)))));
 	}
 }

@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -28,10 +29,6 @@ public class UserController {
         this.userService = userService;
     }
 
-
-    public void resetId() {
-        userService.setIdGenerator(0);
-    }
     @GetMapping
     public List<User> findAll() {
         log.debug("Доступно фильмов: {}",userService.findUsers().size());

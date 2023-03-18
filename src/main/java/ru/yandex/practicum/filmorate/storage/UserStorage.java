@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserStorage {
 
@@ -11,7 +12,7 @@ public interface UserStorage {
 
     User updateUser(User user);
 
-    List<User> getUsers();
+    Map<Long, User> getUsers();
 
     User removeUser(User user);
 

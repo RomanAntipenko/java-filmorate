@@ -9,27 +9,26 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
 
+    private final UserStorage userStorage;
     private final FilmStorage filmStorage;
 
     @Setter
     private long idGenerator;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(UserStorage userStorage, FilmStorage filmStorage) {
+        this.userStorage = userStorage;
         this.filmStorage = filmStorage;
     }
 
-
-    public Collection<Film> findFilms() {
-        return filmStorage.getFilms();
+    public List<Film> findFilms() {
+        return new ArrayList<>(filmStorage.getFilms().values());
     }
 
     public Film createFilm(Film film) {
@@ -55,6 +54,10 @@ public class FilmService {
 
     public String addLikeToFilm(Long id, Long userId) {
         Film film = filmStorage.getFilmById(id);
+        if (!userStorage.getUsers().containsKey(userId)) {
+            throw new ArgumentNotFoundException(String.format("Пользователя с id: \"%s\" не существует." +
+                    " Не существующий пользователь не может ставить лайки ", userId));
+        }
         if (film.getUserLikesIds().contains(userId)) {
             return String.format("Пользователь с id: \"%s\" уже поставил лайк фильму: \"%s\".", userId, film.getName());
         } else {
@@ -76,7 +79,7 @@ public class FilmService {
     }
 
     public List<Film> findPopularFilms(int count) {
-        return filmStorage.getFilms().stream()
+        return filmStorage.getFilms().values().stream()
                 .sorted((x1, x2) -> x2.getUserLikesIds().size() - x1.getUserLikesIds().size())
                 .limit(count)
                 .collect(Collectors.toList());

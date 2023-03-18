@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,7 +25,7 @@ public class UserService {
     }
 
     public List<User> findUsers() {
-        return userStorage.getUsers();
+        return new ArrayList<>(userStorage.getUsers().values());
     }
 
     public User createUser(User user) {
@@ -88,11 +86,6 @@ public class UserService {
     public List<User> findCommonFriendsToUser(Long id, Long otherId) {
         User user = userStorage.getUserById(id);
         User user1 = userStorage.getUserById(otherId);
-        if (user.getFriendsIds().isEmpty() || user1.getFriendsIds().isEmpty()) {
-            log.info(String.format("У пользователей \"%s\" и \"%s\" нет общих друзей",
-                    user.getLogin(), user1.getLogin()));
-            return List.of();
-        } else {
             Set<Long> friends = new HashSet<>(user.getFriendsIds());
             friends.retainAll(user1.getFriendsIds());
             List<User> common = new ArrayList<>();
@@ -100,7 +93,6 @@ public class UserService {
                 common.add(userStorage.getUserById(ids));
             }
             return common;
-        }
     }
 
 }

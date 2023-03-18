@@ -4,28 +4,27 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.ArgumentNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidUpdateException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private List<User> users = new ArrayList<>();
+    private Map<Long, User> users = new HashMap<>();
 
     @Override
     public User addUser(User user) {
-        users.add(user);
+        users.put(user.getId(),user);
         return user;
     }
 
     @Override
     public User updateUser(User user) {
-        if (users.contains(user)) {
-            users.set(users.indexOf(user), user);
+        if (users.containsValue(user)) {
+            users.put(user.getId(), user);
             return user;
         } else {
             log.warn("Такого пользователя нет");
@@ -34,23 +33,25 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUsers() {
+    public Map<Long, User> getUsers() {
         return users;
     }
 
     @Override
     public User removeUser(User user) {
-        users.remove(user);
-        return user;
+        if(users.containsValue(user)) {
+            users.remove(user.getId());
+            return user;
+        } else {
+            log.warn("Такого пользователя нет");
+            throw new ArgumentNotFoundException("Пользователь не найден");
+        }
     }
 
     @Override
     public User getUserById(Long id) {
-        User user = User.builder()
-                .id(id)
-                .build();
-        if (users.contains(user)) {
-            return users.get(users.indexOf(user));
+        if (users.containsKey(id)) {
+            return users.get(id);
         } else {
             log.warn("Пользователя с таким id: {} нет", id);
             throw new ArgumentNotFoundException(String

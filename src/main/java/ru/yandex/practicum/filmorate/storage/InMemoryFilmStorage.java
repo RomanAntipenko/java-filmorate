@@ -7,24 +7,26 @@ import ru.yandex.practicum.filmorate.exceptions.InvalidUpdateException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private List<Film> films = new ArrayList<>();
+    private Map<Long, Film> films = new HashMap<>();
 
     @Override
     public Film addFilm(Film film) {
-            films.add(film);
-            return film;
+        films.put(film.getId(), film);
+        return film;
     }
 
     @Override
     public Film updateFilm(Film film) {
-        if (films.contains(film)) {
-            films.set(films.indexOf(film), film);
+        if (films.containsValue(film)) {
+            films.put(film.getId(), film);
             return film;
         } else {
             log.warn("Такого фильма нет");
@@ -33,23 +35,26 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilms() {
+    public Map<Long, Film> getFilms() {
         return films;
     }
 
     @Override
     public Film removeFilm(Film film) {
-        films.remove(film);
-        return film;
+        if (films.containsValue(film)) {
+            films.remove(film.getId());
+            return film;
+        } else {
+            log.warn("Такого фильма нет");
+            throw new ArgumentNotFoundException("Фильм не найден");
+        }
     }
+
 
     @Override
     public Film getFilmById(Long id) {
-        Film film = Film.builder()
-                .id(id)
-                .build();
-        if (films.contains(film)) {
-            return films.get(films.indexOf(film));
+        if (films.containsKey(id)) {
+            return films.get(id);
         } else {
             log.warn("Фильма с таким id {} нет", id);
             throw new ArgumentNotFoundException(String

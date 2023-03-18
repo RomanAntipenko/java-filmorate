@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -24,7 +25,7 @@ public class FilmController {
 
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         log.debug("Доступно фильмов: {}", filmService.findFilms().size());
         return filmService.findFilms();
     }

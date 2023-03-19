@@ -1,40 +1,44 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exceptions.InvalidUpdateException;
+import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @RestController
 @Slf4j
 @RequestMapping("/users")
 public class UserController {
 
-    @Setter
-    private int idGenerator = 0;
-    @Getter
-    private final List<User> users = new ArrayList<>();
+    private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List<User> findAll() {
-        log.debug("Доступно фильмов: {}",users.size());
-        return users;
+        log.debug("Доступно фильмов: {}",userService.findUsers().size());
+        return userService.findUsers();
     }
 
     @PostMapping
     public User create(@RequestBody @Valid User user) {
         if (isValidUser(user)) {
-            int id = ++idGenerator;
-            user.setId(id);
-            users.add(user);
+            userService.createUser(user);
             log.info("Новый пользователь был добавлен");
             return user;
         }
@@ -44,11 +48,7 @@ public class UserController {
     @PutMapping
     public User update(@RequestBody @Valid User user) {
         if (isValidUser(user)) {
-            if (!users.contains(user)) {
-                log.warn("Такого пользователя не существует");
-                throw new InvalidUpdateException("Нечего обновлять");
-            }
-            users.set(users.indexOf(user), user);
+            userService.updateUser(user);
             log.info("Информация о пользователе обновлена");
             return user;
         }
@@ -65,5 +65,33 @@ public class UserController {
             log.info("Передано пустое имя, вместо имени будет использоваться логин");
         }
         return true;
+    }
+
+    @PutMapping("{id}/friends/{friendsId}")
+    public String addToFriends(@PathVariable("id") Long id,
+                             @PathVariable("friendsId") Long friendsId) {
+        return userService.addUserToFriends(id, friendsId);
+    }
+
+    @DeleteMapping("{id}/friends/{friendsId}")
+    public String removeFromFriends(@PathVariable("id") Long id,
+                               @PathVariable("friendsId") Long friendsId) {
+        return userService.removeUserFromFriends(id, friendsId);
+    }
+
+    @GetMapping("{id}/friends")
+    public List<User> findFriends(@PathVariable("id") Long id) {
+        return userService.findAllFriends(id);
+    }
+
+    @GetMapping("{id}/friends/common/{otherId}")
+    public List<User> findCommonFriends(@PathVariable("id") Long id,
+                                  @PathVariable("otherId") Long otherId) {
+        return userService.findCommonFriendsToUser(id, otherId);
+    }
+
+    @GetMapping("{id}")
+    public User findUser(@PathVariable("id") Long id) {
+        return userService.getUserById(id);
     }
 }

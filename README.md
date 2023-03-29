@@ -1,13 +1,15 @@
 # java-filmorate
+
 Template repository for Filmorate project.
 
 ## DB for filmorate-project.
 
-![DB for filmorate project.](..\java-filmorate\DB.png)
+![DB for filmorate project.](C:\Users\Roman\dev\DB.png "DB for filmorate project.")
 
- ### Вот несколько запросов к базе данных для понимания ее устройства:
+### Вот несколько запросов к базе данных для понимания ее устройства:
 
 _Получить список друзей для пользователя с User_ID = 1_
+
 ```
 SELECT Friends_ID
 FROM Friends
@@ -16,6 +18,7 @@ AND Friends_Status LIKE 'confirmed';
 ```
 
 _Получить список общих друзей для пользователей с User_ID = 1 и User_ID = 2_
+
 ```
 SELECT f.Friends_ID as common
 FROM Friends AS f
@@ -27,6 +30,7 @@ AND f.common IN (SELECT Friends_ID
 ```
 
 _Получить кол-во лайков для фильма с Film_ID = 1_
+
 ```
 SELECT COUNT(UserID)
 FROM Likes_To_Film
@@ -34,6 +38,7 @@ WHERE Film_ID = 1;
 ```
 
 _Получить ТОП 5 залайканных фильма_
+
 ```
 SELECT Film_ID,
        COUNT(UserID) AS likes

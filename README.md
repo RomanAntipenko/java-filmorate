@@ -2,11 +2,12 @@
 Template repository for Filmorate project.
 
 ## DB for filmorate-project.
- ![DB for filmorate project.](../java-filmorate/DB.png)
 
- ### Р’РѕС‚ РЅРµСЃРєРѕР»СЊРєРѕ Р·Р°РїСЂРѕСЃРѕРІ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С… РґР»СЏ РїРѕРЅРёРјР°РЅРёСЏ РµРµ СѓСЃС‚СЂРѕР№СЃС‚РІР°:
+![DB for filmorate project.](C:\Users\Roman\dev\first-project\java-filmorate\DB.png)
 
-_РџРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє РґСЂСѓР·РµР№ РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ СЃ User_ID = 1_
+ ### Вот несколько запросов к базе данных для понимания ее устройства:
+
+_Получить список друзей для пользователя с User_ID = 1_
 ```
 SELECT Friends_ID
 FROM Friends
@@ -14,7 +15,7 @@ WHERE User_ID = 1
 AND Friends_Status LIKE 'confirmed';
 ```
 
-_РџРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє РѕР±С‰РёС… РґСЂСѓР·РµР№ РґР»СЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№ СЃ User_ID = 1 Рё User_ID = 2_
+_Получить список общих друзей для пользователей с User_ID = 1 и User_ID = 2_
 ```
 SELECT f.Friends_ID as common
 FROM Friends AS f
@@ -25,14 +26,14 @@ AND f.common IN (SELECT Friends_ID
                  WHERE UserID = 1);
 ```
 
-_РџРѕР»СѓС‡РёС‚СЊ РєРѕР»-РІРѕ Р»Р°Р№РєРѕРІ РґР»СЏ С„РёР»СЊРјР° СЃ Film_ID = 1_
+_Получить кол-во лайков для фильма с Film_ID = 1_
 ```
 SELECT COUNT(UserID)
 FROM Likes_To_Film
 WHERE Film_ID = 1;
 ```
 
-_РџРѕР»СѓС‡РёС‚СЊ РўРћРџ 5 Р·Р°Р»Р°Р№РєР°РЅРЅС‹С… С„РёР»СЊРјР°_
+_Получить ТОП 5 залайканных фильма_
 ```
 SELECT Film_ID,
        COUNT(UserID) AS likes

@@ -4,7 +4,7 @@ Template repository for Filmorate project.
 
 ## DB for filmorate-project.
 
-![DB for filmorate project.](C:\Users\Roman\dev\DB.png "DB for filmorate project.")
+![DB for filmorate project.](./DB.png)
 
 ### Вот несколько запросов к базе данных для понимания ее устройства:
 

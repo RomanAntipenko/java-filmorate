@@ -1,21 +1,15 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.InvalidUpdateException;
 import ru.yandex.practicum.filmorate.exceptions.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @RestController
 @Slf4j
@@ -31,7 +25,7 @@ public class UserController {
 
     @GetMapping
     public List<User> findAll() {
-        log.debug("Доступно фильмов: {}",userService.findUsers().size());
+        log.info("Пользователей: {}", userService.findUsers().size());
         return userService.findUsers();
     }
 
@@ -47,7 +41,7 @@ public class UserController {
 
     @PutMapping
     public User update(@RequestBody @Valid User user) {
-        if (isValidUser(user)) {
+        if (isValidUser(user) && user.getId() != null) {
             userService.updateUser(user);
             log.info("Информация о пользователе обновлена");
             return user;
@@ -69,13 +63,13 @@ public class UserController {
 
     @PutMapping("{id}/friends/{friendsId}")
     public String addToFriends(@PathVariable("id") Long id,
-                             @PathVariable("friendsId") Long friendsId) {
+                               @PathVariable("friendsId") Long friendsId) {
         return userService.addUserToFriends(id, friendsId);
     }
 
     @DeleteMapping("{id}/friends/{friendsId}")
     public String removeFromFriends(@PathVariable("id") Long id,
-                               @PathVariable("friendsId") Long friendsId) {
+                                    @PathVariable("friendsId") Long friendsId) {
         return userService.removeUserFromFriends(id, friendsId);
     }
 
@@ -86,7 +80,7 @@ public class UserController {
 
     @GetMapping("{id}/friends/common/{otherId}")
     public List<User> findCommonFriends(@PathVariable("id") Long id,
-                                  @PathVariable("otherId") Long otherId) {
+                                        @PathVariable("otherId") Long otherId) {
         return userService.findCommonFriendsToUser(id, otherId);
     }
 

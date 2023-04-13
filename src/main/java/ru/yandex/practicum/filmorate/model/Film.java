@@ -4,7 +4,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,4 +31,8 @@ public class Film {
     private long duration;
     @EqualsAndHashCode.Exclude
     private final Set<Long> userLikesIds = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private final Set<Genre> genres = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private final Mpa mpa;
 }

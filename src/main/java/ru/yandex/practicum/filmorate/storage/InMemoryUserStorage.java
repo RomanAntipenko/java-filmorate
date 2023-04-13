@@ -6,7 +6,9 @@ import ru.yandex.practicum.filmorate.exceptions.ArgumentNotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.InvalidUpdateException;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -17,7 +19,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        users.put(user.getId(),user);
+        users.put(user.getId(), user);
         return user;
     }
 
@@ -33,13 +35,13 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Map<Long, User> getUsers() {
-        return users;
+    public List<User> getUsers() {
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public User removeUser(User user) {
-        if(users.containsValue(user)) {
+        if (users.containsValue(user)) {
             users.remove(user.getId());
             return user;
         } else {

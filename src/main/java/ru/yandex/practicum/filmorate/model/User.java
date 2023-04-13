@@ -30,4 +30,19 @@ public class User {
     private LocalDate birthday;
     @EqualsAndHashCode.Exclude
     private final Set<Long> friendsIds = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private final Set<Long> followedFriendsIds = new HashSet<>();
+/*
+    @EqualsAndHashCode.Exclude
+    private final Map<Long,String> friends = new HashMap<>();
+*/
+
+    /*public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("user_name", name);
+        values.put("user_login", login);
+        values.put("user_email", email);
+        values.put("user_birthday", birthday);
+        return values;
+    }*/
 }

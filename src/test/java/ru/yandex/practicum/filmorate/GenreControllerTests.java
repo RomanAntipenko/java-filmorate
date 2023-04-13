@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -12,21 +11,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
-import ru.yandex.practicum.filmorate.dao.MpaDao;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmDBStorage;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest()
 @AutoConfigureMockMvc

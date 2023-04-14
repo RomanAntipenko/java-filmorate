@@ -21,7 +21,6 @@ public class GenreService {
         return genreDao.getAllGenreList();
     }
 
-
     public Genre getGenresById(int id) {
         return genreDao.getGenreByGenreId(id);
     }

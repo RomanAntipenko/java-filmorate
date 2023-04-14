@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dao;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.ArgumentNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -32,19 +33,21 @@ public class GenreDao {
 
 
     public Genre getGenreByGenreId(int genreId) {
-        if (isValidId(genreId)) {
-            String sql = "SELECT genre_id, genre_name FROM public.genre WHERE genre_id = ?";
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> makeGenre(rs), genreId);
+        String sql = "SELECT genre_id, genre_name FROM public.genre WHERE genre_id = ?";
+        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, genreId);
+        if (sqlRowSet.next()) {
+            return Genre.builder()
+                    .id(sqlRowSet.getInt("genre_id"))
+                    .name(sqlRowSet.getString("genre_name"))
+                    .build();
         } else {
             throw new ArgumentNotFoundException("Такого id жанра нет");
         }
-
     }
 
     public List<Genre> getGenreListByFilmId(long filmId) {
-        String sql = "SELECT fg.genre_id, g.genre_name FROM public.films AS f " +
-                "LEFT JOIN public.films_genre AS fg ON f.film_id = fg.film_id " +
-                "LEFT JOIN public.genre AS g ON fg.genre_id = g.genre_id WHERE f.film_id = ?";
+        String sql = "SELECT fg.genre_id, g.genre_name FROM public.films_genre AS fg " +
+                "LEFT JOIN public.genre AS g ON fg.genre_id = g.genre_id WHERE fg.film_id = ?";
         List<Genre> genres = jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), filmId);
         if (genres.contains(null)) {
             return Collections.emptyList();
@@ -57,14 +60,5 @@ public class GenreDao {
     public List<Genre> getAllGenreList() {
         String sql = "SELECT genre_id, genre_name FROM public.genre";
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
-    }
-
-    public boolean isValidId(int id) {
-        String sql = "SELECT COUNT(*) FROM public.genre WHERE genre_id = ?";
-        Integer coincidence = jdbcTemplate.queryForObject(sql, Integer.class, id);
-        if (coincidence != 0) {
-            return true;
-        }
-        return false;
     }
 }

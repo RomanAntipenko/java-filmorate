@@ -43,20 +43,6 @@ public class UserService {
         return userStorage.getUserById(id);
     }
 
-    public String addOLDUserToFriends(Long id, Long friendsId) {
-        User user = userStorage.getUserById(id);
-        User friend = userStorage.getUserById(friendsId);
-
-        if (user.getFriendsIds().contains(friendsId)) {
-            return String.format("Пользователь: \"%s\" уже имеет пользователя: \"%s\" в друзьях.",
-                    user.getLogin(), friend.getLogin());
-        } else {
-            user.getFriendsIds().add(friendsId);
-            friend.getFriendsIds().add(id);
-            return String.format("Пользователь: \"%s\" добавлен в друзья", friend.getLogin());
-        }
-    }
-
     public String addUserToFriends(Long id, Long friendsId) {
         User user = userStorage.getUserById(id);
         User friend = userStorage.getUserById(friendsId);
@@ -111,18 +97,6 @@ public class UserService {
         }
         return list;
     }
-
-    /*public List<User> oldFindCommonFriendsToUser(Long id, Long otherId) {
-        User user = userStorage.getUserById(id);
-        User user1 = userStorage.getUserById(otherId);
-            Set<Long> friends = new HashSet<>(user.getFriendsIds());
-            friends.retainAll(user1.getFriendsIds());
-            List<User> common = new ArrayList<>();
-            for (Long ids : friends) {
-                common.add(userStorage.getUserById(ids));
-            }
-            return common;
-    }*/
 
     public List<User> findCommonFriendsToUser(Long id, Long otherId) {
         List<User> friendsToUser = findAllFriends(id);

@@ -40,7 +40,6 @@ public class FilmDBStorage implements FilmStorage {
     public Film addFilm(Film film) {
         String sqlQuery = "INSERT INTO public.films (film_name, film_description," +
                 " film_duration, release_date) VALUES(?, ?, ?, ?)";
-        /*film.getMpa().getRatingId()*/
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"film_id"});
@@ -97,7 +96,8 @@ public class FilmDBStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilms() {
-        String sql = "SELECT * FROM public.films";
+        String sql = "SELECT * FROM public.films as f " +
+                "LEFT JOIN mpa_rating AS mp ON f.mpa_id = mp.mpa_id";
         return jdbcTemplate.query(sql, this::makeFilm);
     }
 
@@ -118,12 +118,9 @@ public class FilmDBStorage implements FilmStorage {
                 .id(id)
                 .build();
         if (filmStorageValidation(filmValid)) {
-            String sql = "SELECT * FROM public.films WHERE film_id = ?";
-            /*return jdbcTemplate.queryForObject(sql, (rs, rowNum)-> makeUser(rs), id);*/
+            String sql = "SELECT * FROM public.films as f " +
+                    "LEFT JOIN mpa_rating AS mp ON f.mpa_id = mp.mpa_id WHERE f.film_id = ?";
             Film film = jdbcTemplate.queryForObject(sql, this::makeFilm, id);
-            /*String sqlLikes = "SELECT user_id FROM public.likes_to_film WHERE film_id = ?";
-            List<Long> filmLikes = jdbcTemplate.queryForList(sqlLikes, Long.class, id);
-            film.getUserLikesIds().addAll(filmLikes);*/
             return film;
         } else {
             throw new ArgumentNotFoundException("Такого фильма нет");
@@ -136,7 +133,7 @@ public class FilmDBStorage implements FilmStorage {
         String description = rs.getString("film_description");
         long duration = rs.getLong("film_duration");
         LocalDate releaseDate = rs.getDate("release_date").toLocalDate();
-        Mpa mpaRating = mpaDao.getMpaByFilmId(id);
+        Mpa mpaRating = mpaDao.makeMpa(rs);
         List<Genre> genres = genreDao.getGenreListByFilmId(id);
         List<Long> friends = jdbcTemplate.queryForList("SELECT user_id FROM public.likes_to_film WHERE film_id = ?",
                 Long.class, id);

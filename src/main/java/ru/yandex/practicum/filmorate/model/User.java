@@ -30,4 +30,6 @@ public class User {
     private LocalDate birthday;
     @EqualsAndHashCode.Exclude
     private final Set<Long> friendsIds = new HashSet<>();
+    @EqualsAndHashCode.Exclude
+    private final Set<Long> followedFriendsIds = new HashSet<>();
 }

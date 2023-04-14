@@ -8,9 +8,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Slf4j
@@ -43,9 +41,8 @@ public class FilmController {
     @PutMapping
     public Film update(@RequestBody @Valid Film film) {
         if (isFilmValid(film)) {
-            filmService.updateFilm(film);
             log.info("Информация о фильме обновлена");
-            return film;
+            return filmService.updateFilm(film);
         }
         return null;
     }
@@ -72,7 +69,7 @@ public class FilmController {
 
     @GetMapping("popular")
     public List<Film> findPopular(@RequestParam(defaultValue = "10", required = false)
-                                 @PathVariable("count") int count) {
+                                  @PathVariable("count") int count) {
         return filmService.findPopularFilms(count);
     }
 
